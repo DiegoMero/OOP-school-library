@@ -30,8 +30,7 @@ class App
 
   def create_person
     print 'Do you want to create a student (1) or a teacher(2)? [Input the number]: '
-    option = gets.chomp
-    option = option.to_i
+    option = gets.chomp.to_i
     case option
     when 1
       print 'Age: '
@@ -66,14 +65,12 @@ class App
   def create_rental
     puts 'Select a book from the following list by number'
     @books.each_with_index { |book, index| puts "#{index}) Title: '#{book.title}', Author: #{book.author}" }
-    book_selected = gets.chomp
-    book_selected = book_selected.to_i
+    book_selected = gets.chomp.to_i
     puts 'Select a person from the following list by number (not id)'
     @people.each_with_index { |person, index|
       puts "#{index}) [#{person.class.name}] Name: #{person.name}, ID: #{person.id}, Age: #{person.age}"
     }
-    person_selected = gets.chomp
-    person_selected = person_selected.to_i
+    person_selected = gets.chomp.to_i
     print 'Date: '
     date = gets.chomp
     rental = Rental.new(date, @books[book_selected], @people[person_selected])
@@ -83,8 +80,7 @@ class App
 
   def rental_list
     print 'ID of person: '
-    id_selected = gets.chomp
-    id_selected = is_selected.to_i
+    id_selected = gets.chomp.to_i
     new_rental_list = @rentals.select { |rental| rental.person.id == id_selected }
     puts 'Rentals: '
     new_rental_list.each { |rental| puts "Date: #{rental.date}, Book '#{rental.book.title}' by #{rental.book.author}" }

@@ -11,10 +11,10 @@ require './app'
 
 def main
   app = App.new
+  app.load_data
   loop do
     puts @menu
     menu_option = gets.chomp.to_i
-    exit if menu_option == 7
     app.run_action(menu_option)
   end
 end

@@ -12,26 +12,28 @@ class App
   end
 
   def load_data
-    book_data = File.open("books.json")
+    book_data = File.open('books.json')
     book_data = book_data.read
     book_data = JSON.parse(book_data)
-    book_data.map {|book| @books.push(Book.new(book["title"],book["author"]))}
+    book_data.map { |book| @books.push(Book.new(book['title'], book['author'])) }
 
-    people_data = File.open("people.json")
+    people_data = File.open('people.json')
     people_data = people_data.read
     people_data = JSON.parse(people_data)
     people_data.each do |person|
-      if person["type"] == "Student"
-        @people.push(Student.new(person["age"], person["name"], parent_permission: person["permission"]))
+      if person['type'] == 'Student'
+        @people.push(Student.new(person['age'], person['name'], parent_permission: person['permission']))
       else
-        @people.push(Teacher.new(person["age"], person["specialization"], person["name"]))
+        @people.push(Teacher.new(person['age'], person['specialization'], person['name']))
       end
     end
 
-    rentals_data = File.open("rentals.json")
+    rentals_data = File.open('rentals.json')
     rentals_data = rentals_data.read
     rentals_data = JSON.parse(rentals_data)
-    rentals_data.map {|rental| @rentals.push(Rental.new(rental["date"], @books[rental["book_index"]], @people[rental["person_index"]]))}
+    rentals_data.map do |rental|
+      @rentals.push(Rental.new(rental['date'], @books[rental['book_index']], @people[rental['person_index']]))
+    end
   end
 
   def run_action(menu_option)
@@ -136,24 +138,32 @@ class App
   end
 
   def save_data
-    @books = @books.map {|book| book = {:title => book.title, :author => book.author}}
+    @books = @books.map { |book| { title: book.title, author: book.author } }
     @books = JSON.generate(@books)
-    File.open("books.json", "w") { |data| data.write @books }
+    File.write('books.json', @books)
 
     @people = @people.map do |person|
-      if person.class.name == "Student"
-        person = {:age => person.age, :name => person.name, :permission => person.parent_permission, :type => person.class.name}
+      if person.instance_of?(::Student)
+        { age: person.age, name: person.name, permission: person.parent_permission,
+          type: person.class.name }
       else
-        person = {:age => person.age, :name => person.name, :specialization => person.specialization, :type => person.class.name}
+        { age: person.age, name: person.name, specialization: person.specialization,
+          type: person.class.name }
       end
     end
     @people = JSON.generate(@people)
-    File.open("people.json", "w") { |data| data.write @people}
+    File.write('people.json', @people)
   end
 
   def save_rental_data
-    @rentals = @rentals.map {|rental| rental = {:date => rental.date, :book_index => @books.find_index { |book| book.title == rental.book.title}, :person_index => @people.find_index { |person| person.id == rental.person.id}}}
+    @rentals = @rentals.map do |rental|
+      rental = { date: rental.date, book_index: @books.find_index do |book|
+                                                  book.title == rental.book.title
+                                                end, person_index: @people.find_index do |person|
+                                                                     person.id == rental.person.id
+                                                                   end }
+    end
     @rentals = JSON.generate(@rentals)
-    File.open("rentals.json", "w") { |data| data.write @rentals}
+    File.write('rentals.json', @rentals)
   end
 end
